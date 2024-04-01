@@ -11,9 +11,11 @@ import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.example.pokeapipruebaapp.ItemModel
 import com.example.pokeapipruebaapp.R
 import com.example.pokeapipruebaapp.adapter.RecyclerViewAdapter
 import com.example.pokeapipruebaapp.databinding.FragmentListOfPokemonsBinding
+import com.example.pokeapipruebaapp.pokemonList.domain.model.PokemonListModel
 import com.example.pokeapipruebaapp.pokemonList.domain.model.pokemonListModeltoItemModel
 import com.example.pokeapipruebaapp.pokemonList.ui.viewmodel.ListOfPokemonsViewModel
 import com.google.gson.Gson
@@ -28,6 +30,9 @@ class ListOfPokemonsFragment : Fragment() {
     private val binding get() = _binding!!
     private lateinit var recyclerview: RecyclerView
     private lateinit var adapter: RecyclerViewAdapter
+    private lateinit var listOfPokemons:PokemonListModel
+    private lateinit var listOfItemModel: List<ItemModel>
+    private var currentId: Int = 0
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -56,15 +61,33 @@ class ListOfPokemonsFragment : Fragment() {
     }
 
     private fun setupObservers(){
-        listOfPokemonsViewModel.getPokemonsResult.observe(viewLifecycleOwner, Observer {
-            Log.d("result", Gson().toJson(it))
-            // This loop will create 20 Views containing
-            // the image with the count of view
-            // This will pass the ArrayList to our Adapter
-            adapter = RecyclerViewAdapter(it.data!!.pokemonListModeltoItemModel(), R.color.gray_light, R.color.green, requireContext().getDrawable(R.drawable.profile)!! )
+        listOfPokemonsViewModel.getPokemonsResult.observe(viewLifecycleOwner, Observer { it ->
+            Log.d("resultView", Gson().toJson(it))
+            it!!.listOfPokemons.forEach {
+                if(currentId < 24){
+                    currentId++
+                    listOfPokemonsViewModel.getFormPokemon(it.id, it.name)
+                }
+            }
 
-            // Setting the Adapter with the recyclerview
-            recyclerview.adapter = adapter
         })
+
+        listOfPokemonsViewModel.getDataPokemonResult.observe(viewLifecycleOwner, Observer {
+            //listOfPokemons.listOfPokemons.get(currentId).data = it.data!!
+        })
+
+        listOfPokemonsViewModel.getFormPokemonResult.observe(viewLifecycleOwner, Observer {
+            if(currentId.equals(24)){
+                adapter = RecyclerViewAdapter(listOfPokemonsViewModel.getListOfItemModel(), R.color.gray_light, R.color.green, requireContext().getDrawable(R.drawable.profile)!!, ::onClickPokemon
+                )
+                // Setting the Adapter with the recyclerview
+                recyclerview.adapter = adapter
+            }
+        })
+
+    }
+
+    private fun onClickPokemon(id: Int){
+        listOfPokemonsViewModel.getDataPokemon(id)
     }
 }

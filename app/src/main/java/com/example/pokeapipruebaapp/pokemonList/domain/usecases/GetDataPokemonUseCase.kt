@@ -7,9 +7,9 @@ import com.example.pokeapipruebaapp.utils.NetworkResult
 import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
 
-class GetListOfPokemonsUseCase @Inject constructor(private val repository: PokeApiPruebaRepository) {
+class GetDataPokemonUseCase @Inject constructor(private val repository: PokeApiPruebaRepository) {
 
-    suspend operator fun invoke(offset: Int, limit: Int): NetworkResult<PokemonListModel> {
-        return repository.getPokemons(offset, limit)
+    suspend operator fun invoke(id: Int): NetworkResult<PokemonDataModel> {
+        return repository.getDataPokemon(id)
     }
 }

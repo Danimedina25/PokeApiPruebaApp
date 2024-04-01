@@ -1,7 +1,8 @@
 package com.example.pokeapipruebaapp.pokemonList.domain.model
 
-data class PokemonModel(
+data class PokemonFormModel(
     val id: Int,
     val name: String,
-    var url: String,
+    val sprites: SpritesModel,
+    val types: List<TypesModel>,
 )

@@ -6,9 +6,12 @@ data class PokemonListModel(
     val listOfPokemons: List<PokemonModel>
 )
 
+
+
 fun PokemonListModel.pokemonListModeltoItemModel(): List<ItemModel> {
     val listItemModel = listOfPokemons.mapIndexed{ _, pokemon ->
        ItemModel(
+            id = pokemon.id,
             nombre = pokemon.name,
             url_image = pokemon.url
         )

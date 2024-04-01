@@ -2,6 +2,7 @@ package com.example.pokeapipruebaapp.adapter
 
 import android.annotation.SuppressLint
 import android.graphics.drawable.Drawable
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -17,12 +18,14 @@ import com.bumptech.glide.request.target.Target
 import com.example.pokeapipruebaapp.ItemModel
 import com.example.pokeapipruebaapp.R
 import com.example.pokeapipruebaapp.databinding.ItemMasterDetailBinding
+import com.google.gson.Gson
 
 class RecyclerViewAdapter(
     private val listItems: List<ItemModel>,
     val backgroundColor: Int,
     val textColor: Int,
-    val placeholderImage: Drawable
+    val placeholderImage: Drawable,
+    val onClickItem: (id: Int) -> Unit
     ):
     RecyclerView.Adapter<RecyclerViewAdapter.MyViewHolder>() {
 
@@ -39,7 +42,8 @@ class RecyclerViewAdapter(
     override fun onBindViewHolder(holder: MyViewHolder, position: Int) {
         with(holder){
             with(listItems[position]){
-                if(!this.url_image.isNullOrEmpty()){
+                Log.d("adapter", Gson().toJson(listItems))
+                if(this.url_image.isNotEmpty()){
                     showImageFromUrl(binding, this.url_image, this.nombre)
                 }else{
                     if(!this.nombre.isNullOrEmpty()){
@@ -51,6 +55,9 @@ class RecyclerViewAdapter(
                     }else{
                         showImagePlaceholder(binding, placeholderImage)
                     }
+                }
+                binding.imageBackground.setOnClickListener{
+                    onClickItem(this.id)
                 }
             }
         }
@@ -68,7 +75,7 @@ class RecyclerViewAdapter(
         val cardColor = ContextCompat.getColor(binding.imageProfile.context!!, backgroundColor)
         binding.imageBackground.setCardBackgroundColor(cardColor)
         Glide
-            .with(binding.imageProfile.context)
+            .with(binding.imageBackground.context)
             .load(urlImage)
             .listener(object : RequestListener<Drawable> {
                 override fun onResourceReady(
@@ -78,7 +85,7 @@ class RecyclerViewAdapter(
                     dataSource: DataSource,
                     isFirstResource: Boolean
                 ): Boolean {
-                    return true
+                    return false
                 }
 
                 override fun onLoadFailed(

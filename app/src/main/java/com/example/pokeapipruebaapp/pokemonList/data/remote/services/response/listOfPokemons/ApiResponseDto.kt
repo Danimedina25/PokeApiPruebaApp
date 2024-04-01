@@ -1,4 +1,4 @@
-package com.example.pokeapipruebaapp.pokemonList.data.remote.services.response
+package com.example.pokeapipruebaapp.pokemonList.data.remote.services.response.listOfPokemons
 
 import com.google.gson.annotations.SerializedName
 

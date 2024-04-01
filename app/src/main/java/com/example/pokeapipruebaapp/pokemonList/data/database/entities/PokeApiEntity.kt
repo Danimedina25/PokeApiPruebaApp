@@ -16,8 +16,10 @@ data class PokeApiEntity(
 fun PokeApiEntity.toDomain(): List<PokemonModel> {
     val listOfPokemons = listOfPokemons.listOfPokemons.mapIndexed { _, pokemon ->
         PokemonModel(
+            id= pokemon.id,
             name = pokemon.name,
-            url = pokemon.url
+            url = pokemon.url,
+            //data = pokemon.data
         )
     }
     return listOfPokemons
