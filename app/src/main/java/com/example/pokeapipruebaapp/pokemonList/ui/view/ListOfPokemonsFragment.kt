@@ -60,6 +60,15 @@ class ListOfPokemonsFragment : Fragment() {
     }
 
     private fun setupObservers(){
+        listOfPokemonsViewModel.isLoading.observe(viewLifecycleOwner, Observer {
+            if (it){
+                binding.loader.visibility = View.VISIBLE
+                binding.recyclerView.visibility = View.GONE
+            }else{
+                binding.loader.visibility = View.GONE
+                binding.recyclerView.visibility = View.VISIBLE
+            }
+        })
         listOfPokemonsViewModel.getPokemonsResult.observe(viewLifecycleOwner, Observer { it ->
             it!!.listOfPokemons.forEach {
                 if(currentId < 24){
