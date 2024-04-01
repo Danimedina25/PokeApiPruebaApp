@@ -1,5 +1,6 @@
 package com.example.pokeapipruebaapp.pokemonList.ui.viewmodel
 
+import android.annotation.SuppressLint
 import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
@@ -41,8 +42,8 @@ class ListOfPokemonsViewModel @Inject constructor(
     val listOfItemModel: LiveData<List<ItemModel>>
         get() = _listOfItemModel
 
-    private val _getDataPokemonResult = MutableLiveData<NetworkResult<PokemonDataModel>>()
-    val getDataPokemonResult: LiveData<NetworkResult<PokemonDataModel>>
+    private val _getDataPokemonResult = MutableLiveData<PokemonDataModel>()
+    val getDataPokemonResult: LiveData<PokemonDataModel>
         get() = _getDataPokemonResult
 
     private val _getFormPokemonResult = MutableLiveData<PokemonFormModel>()
@@ -63,12 +64,10 @@ class ListOfPokemonsViewModel @Inject constructor(
     }
 
     fun addItemModel(itemModel: ItemModel){
-        Log.d("addItemModel", Gson().toJson(itemModel))
         _listOfItemModel.value = _listOfItemModel.value!! + itemModel
     }
 
     fun getListOfItemModel(): List<ItemModel>{
-        Log.d("getListOfItemModel", Gson().toJson(_listOfItemModel.value!!) )
         return _listOfItemModel.value!!
     }
 
@@ -76,7 +75,6 @@ class ListOfPokemonsViewModel @Inject constructor(
         _isLoading.value = true
         viewModelScope.launch {
             val result = getListOfPokemonsUseCase(0, 25)
-            Log.d("resultViewModel", Gson().toJson(result.data))
             if(!result.message.isNullOrEmpty())
                 _getPokemonsErrorMessage.value = result.message!!
             else
@@ -89,33 +87,40 @@ class ListOfPokemonsViewModel @Inject constructor(
         _isLoading.value = true
         viewModelScope.launch {
             val result = getDataPokemonUseCase(id)
-            Log.d("result2 ${id}", Gson().toJson(result))
             if(!result.message.isNullOrEmpty())
                 _getPokemonsErrorMessage.value = result.message!!
             else
-                _getDataPokemonResult.value = result
-                //getFormPokemon(id)
-
+                _getDataPokemonResult.value = result.data!!
+                callToGetFormPokemonForDetail(id)
             _isLoading.value = false
         }
     }
+
+    fun callToGetFormPokemonForDetail(id: Int){
+        getFormPokemon(id, "")
+    }
+
+    fun callToGetFormPokemonForGetImage(id: Int, name: String){
+        getFormPokemon(id, name)
+    }
+
+    @SuppressLint("SuspiciousIndentation")
     fun getFormPokemon(id: Int, name:String) {
         _isLoading.value = true
         viewModelScope.launch {
             val result = getFormPokemonUseCase(id)
-            Log.d("result3"+ "," + id.toString() , Gson().toJson(result) )
             if(!result.message.isNullOrEmpty())
                 _getPokemonsErrorMessage.value = result.message!!
             else
                 _getFormPokemonResult.value = result.data!!
-
-                val itemModel = ItemModel(
-                    id,
-                    result.data!!.sprites.front_default,
-                    name
-                )
-                Log.d("itemModel", Gson().toJson(itemModel))
-                addItemModel(itemModel)
+                if(name.isNotEmpty()){
+                    val itemModel = ItemModel(
+                        id,
+                        _getFormPokemonResult.value!!.sprites.front_default,
+                        name
+                    )
+                    addItemModel(itemModel)
+                }
             _isLoading.value = false
         }
     }

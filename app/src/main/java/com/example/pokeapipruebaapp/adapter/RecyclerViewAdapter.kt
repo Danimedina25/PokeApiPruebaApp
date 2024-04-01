@@ -42,11 +42,10 @@ class RecyclerViewAdapter(
     override fun onBindViewHolder(holder: MyViewHolder, position: Int) {
         with(holder){
             with(listItems[position]){
-                Log.d("adapter", Gson().toJson(listItems))
                 if(this.url_image.isNotEmpty()){
                     showImageFromUrl(binding, this.url_image, this.nombre)
                 }else{
-                    if(!this.nombre.isNullOrEmpty()){
+                    if(this.nombre.isNotEmpty()){
                         if (startWithNumberOrSpecialCharacter(this.nombre.first().toString())){
                            showImagePlaceholder(binding, placeholderImage)
                         } else {

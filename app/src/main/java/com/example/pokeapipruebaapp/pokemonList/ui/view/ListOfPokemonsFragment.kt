@@ -16,7 +16,6 @@ import com.example.pokeapipruebaapp.R
 import com.example.pokeapipruebaapp.adapter.RecyclerViewAdapter
 import com.example.pokeapipruebaapp.databinding.FragmentListOfPokemonsBinding
 import com.example.pokeapipruebaapp.pokemonList.domain.model.PokemonListModel
-import com.example.pokeapipruebaapp.pokemonList.domain.model.pokemonListModeltoItemModel
 import com.example.pokeapipruebaapp.pokemonList.ui.viewmodel.ListOfPokemonsViewModel
 import com.google.gson.Gson
 import dagger.hilt.android.AndroidEntryPoint
@@ -62,11 +61,10 @@ class ListOfPokemonsFragment : Fragment() {
 
     private fun setupObservers(){
         listOfPokemonsViewModel.getPokemonsResult.observe(viewLifecycleOwner, Observer { it ->
-            Log.d("resultView", Gson().toJson(it))
             it!!.listOfPokemons.forEach {
                 if(currentId < 24){
                     currentId++
-                    listOfPokemonsViewModel.getFormPokemon(it.id, it.name)
+                    listOfPokemonsViewModel.callToGetFormPokemonForGetImage(it.id, it.name)
                 }
             }
 

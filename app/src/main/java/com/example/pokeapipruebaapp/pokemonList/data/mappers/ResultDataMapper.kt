@@ -10,16 +10,5 @@ import com.example.pokeapipruebaapp.pokemonList.domain.model.TypeModel
 
 fun ApiResponseDataDto.toDomain() = PokemonDataModel(
     height = height,
-    weight = weight,
-    forms = PokemonFormModel(0, "", SpritesModel("", ""), emptyList())
+    weight = weight
 )
-
-fun ApiResponseDataDto.toListOfFormPokemon(): List<PokemonFormsModel> {
-    val listOfForms = forms.mapIndexed { _, form->
-        PokemonFormsModel(
-            name = form.name,
-            url = form.url
-        )
-    }
-    return listOfForms
-}
