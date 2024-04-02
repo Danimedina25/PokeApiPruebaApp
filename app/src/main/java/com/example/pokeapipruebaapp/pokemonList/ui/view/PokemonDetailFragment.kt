@@ -6,6 +6,8 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.compose.ui.text.capitalize
+import androidx.fragment.app.viewModels
+import androidx.lifecycle.Observer
 import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -13,15 +15,18 @@ import com.bumptech.glide.Glide
 import com.example.pokeapipruebaapp.R
 import com.example.pokeapipruebaapp.adapter.ItemModelAdapter
 import com.example.pokeapipruebaapp.databinding.FragmentPokemonDetailBinding
+import com.example.pokeapipruebaapp.pokemonList.domain.model.PokeApiFavoritesModel
 import com.example.pokeapipruebaapp.pokemonList.domain.model.PokemonDataModel
 import com.example.pokeapipruebaapp.pokemonList.domain.model.PokemonFormModel
 import com.example.pokeapipruebaapp.pokemonList.ui.view.adapters.ItemTypeAdapter
+import com.example.pokeapipruebaapp.pokemonList.ui.viewmodel.ListOfPokemonsViewModel
 import dagger.hilt.android.AndroidEntryPoint
 
 
 @AndroidEntryPoint
 class PokemonDetailFragment : Fragment() {
 
+    private val listOfPokemonsViewModel: ListOfPokemonsViewModel by viewModels()
     private var _binding: FragmentPokemonDetailBinding? = null
     private val binding get() = _binding!!
     private lateinit var recyclerview: RecyclerView
@@ -47,12 +52,15 @@ class PokemonDetailFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         pokemonDataModel = navigationArgs.pokemonData
         pokemonFormModel = navigationArgs.pokemonForm
-
-        recyclerview = binding.recyclerView
-        // this creates a vertical layout Manager
-        recyclerview.layoutManager = LinearLayoutManager(context)
-
+        binding.noFavoriteButton.setOnClickListener{
+            val favoritesModel = PokeApiFavoritesModel(pokemonFormModel.id, pokemonFormModel.name)
+            listOfPokemonsViewModel.addToFavorites(favoritesModel)
+        }
+        binding.favoriteButton.setOnClickListener{
+            listOfPokemonsViewModel.deleteFavorite(pokemonFormModel.id)
+        }
         setData()
+        setupObservers()
     }
 
     private fun setData(){
@@ -65,8 +73,26 @@ class PokemonDetailFragment : Fragment() {
             .into(binding.imagePokemon);
         binding.textHeight.text = "${pokemonDataModel.height} pies"
         binding.textWeight.text = "${pokemonDataModel.weight} libras"
+
+        recyclerview = binding.recyclerView
+        // this creates a vertical layout Manager
+        recyclerview.layoutManager = LinearLayoutManager(context)
         adapter = ItemTypeAdapter(pokemonFormModel.types)
         // Setting the Adapter with the recyclerview
         recyclerview.adapter = adapter
+    }
+    private fun setupObservers(){
+        listOfPokemonsViewModel.addToFavoritesResult.observe(viewLifecycleOwner, Observer {
+            if(it > 0){
+                binding.noFavoriteButton.visibility = View.GONE
+                binding.favoriteButton.visibility = View.VISIBLE
+            }
+        })
+        listOfPokemonsViewModel.deleteFavoriteResult.observe(viewLifecycleOwner, Observer {
+            if(it > 0){
+                binding.favoriteButton.visibility = View.GONE
+                binding.noFavoriteButton.visibility = View.VISIBLE
+            }
+        })
     }
 }

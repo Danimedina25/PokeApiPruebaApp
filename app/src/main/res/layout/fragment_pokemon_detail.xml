@@ -26,17 +26,40 @@
                 app:layout_constraintEnd_toEndOf="parent"
                 />
             <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
+                android:layout_width="wrap_content"
+                android:layout_height="60dp"
                 android:id="@+id/text_name"
                 android:textSize="30sp"
                 android:textAlignment="center"
                 android:textColor="@color/black"
                 android:textStyle="bold"
-                android:layout_marginTop="10dp"
+                android:text="Bulbasur"
+                android:gravity="center"
                 app:layout_constraintTop_toBottomOf="@+id/image_pokemon"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"/>
+
+            <ImageButton
+                android:id="@+id/no_favorite_button"
+                android:layout_width="wrap_content"
+                android:layout_height="60dp"
+                android:src="@drawable/no_favorite_icon"
+                android:background="@null"
+                card_view:layout_constraintStart_toEndOf="@+id/text_name"
+                app:layout_constraintTop_toBottomOf="@+id/image_pokemon"
+                card_view:layout_constraintEnd_toEndOf="parent"
+                />
+            <ImageButton
+                android:id="@+id/favorite_button"
+                android:layout_width="wrap_content"
+                android:layout_height="60dp"
+                android:src="@drawable/favorite_icon"
+                android:background="@null"
+                android:visibility="gone"
+                card_view:layout_constraintStart_toEndOf="@+id/text_name"
+                app:layout_constraintTop_toBottomOf="@+id/image_pokemon"
+                card_view:layout_constraintEnd_toEndOf="parent"
+                />
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"

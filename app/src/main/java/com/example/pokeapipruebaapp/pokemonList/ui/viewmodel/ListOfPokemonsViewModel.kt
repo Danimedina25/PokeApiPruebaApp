@@ -7,9 +7,14 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.pokeapipruebaapp.ItemModel
+import com.example.pokeapipruebaapp.pokemonList.data.database.dao.PokeApiDao
+import com.example.pokeapipruebaapp.pokemonList.domain.model.PokeApiFavoritesModel
 import com.example.pokeapipruebaapp.pokemonList.domain.model.PokemonDataModel
 import com.example.pokeapipruebaapp.pokemonList.domain.model.PokemonFormModel
 import com.example.pokeapipruebaapp.pokemonList.domain.model.PokemonListModel
+import com.example.pokeapipruebaapp.pokemonList.domain.model.toDatabase
+import com.example.pokeapipruebaapp.pokemonList.domain.usecases.AddToFavoritesUseCase
+import com.example.pokeapipruebaapp.pokemonList.domain.usecases.DeleteFavoriteUseCase
 import com.example.pokeapipruebaapp.pokemonList.domain.usecases.GetDataPokemonUseCase
 import com.example.pokeapipruebaapp.pokemonList.domain.usecases.GetFormPokemonUseCase
 import com.example.pokeapipruebaapp.pokemonList.domain.usecases.GetListOfPokemonsUseCase
@@ -31,7 +36,9 @@ import javax.inject.Inject
 class ListOfPokemonsViewModel @Inject constructor(
     private val getListOfPokemonsUseCase: GetListOfPokemonsUseCase,
     private val getDataPokemonUseCase: GetDataPokemonUseCase,
-    private val getFormPokemonUseCase: GetFormPokemonUseCase
+    private val getFormPokemonUseCase: GetFormPokemonUseCase,
+    private val addToFavoritesUseCase: AddToFavoritesUseCase,
+    private val deleteFavoriteUseCase: DeleteFavoriteUseCase
 ) : ViewModel() {
 
     private val _getPokemonsResult = MutableLiveData<PokemonListModel>()
@@ -58,6 +65,14 @@ class ListOfPokemonsViewModel @Inject constructor(
     val isLoading: LiveData<Boolean>
         get() = _isLoading
 
+    private val _addToFavoritesResult = MutableLiveData<Long>(0)
+    val addToFavoritesResult: LiveData<Long>
+        get() = _addToFavoritesResult
+
+    private val _deleteFavoriteResult = MutableLiveData<Int>(0)
+    val deleteFavoriteResult: LiveData<Int>
+        get() = _deleteFavoriteResult
+
     fun addItemModel(itemModel: ItemModel){
         _listOfItemModel.value = _listOfItemModel.value!! + itemModel
     }
@@ -80,6 +95,21 @@ class ListOfPokemonsViewModel @Inject constructor(
                 _getPokemonsResult.value = result.data!!
 
             _isLoading.value = false
+        }
+    }
+
+    fun addToFavorites(pokeApiFavoritesModel: PokeApiFavoritesModel) {
+        viewModelScope.launch {
+            val result = addToFavoritesUseCase(pokeApiFavoritesModel)
+            Log.d("resultAddToFavorites", result.toString())
+            _addToFavoritesResult.value = result
+        }
+    }
+    fun deleteFavorite(idPokemon: Int) {
+        viewModelScope.launch {
+            val result = deleteFavoriteUseCase(idPokemon)
+            Log.d("resultDeleteFavorite", result.toString())
+            _deleteFavoriteResult.value = result
         }
     }
     fun getDataPokemon(id: Int) {
