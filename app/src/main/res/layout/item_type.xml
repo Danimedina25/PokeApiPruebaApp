@@ -17,7 +17,7 @@
         android:drawablePadding="12dp"
         android:textSize="20sp"
         android:textStyle="normal"
-        android:textAlignment="textStart"
         android:padding="5dp"
+        android:textAlignment="textStart"
         android:textColor="@color/black" />
 </LinearLayout>
