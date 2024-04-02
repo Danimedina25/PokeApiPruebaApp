@@ -9,6 +9,7 @@ import android.view.ViewGroup
 import androidx.compose.runtime.collectAsState
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.pokeapipruebaapp.ItemModel
@@ -29,13 +30,18 @@ class ListOfPokemonsFragment : Fragment() {
     private val binding get() = _binding!!
     private lateinit var recyclerview: RecyclerView
     private lateinit var adapter: RecyclerViewAdapter
-    private lateinit var listOfPokemons:PokemonListModel
-    private lateinit var listOfItemModel: List<ItemModel>
-    private var currentId: Int = 0
+    var currentId: Int = 0
+    private var itemSelected: Boolean = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
+    }
+
+    override fun onResume() {
+        super.onResume()
+        listOfPokemonsViewModel.clearItemModelList()
+        listOfPokemonsViewModel.getPokemons()
     }
 
     override fun onCreateView(
@@ -71,30 +77,32 @@ class ListOfPokemonsFragment : Fragment() {
         })
         listOfPokemonsViewModel.getPokemonsResult.observe(viewLifecycleOwner, Observer { it ->
             it!!.listOfPokemons.forEach {
-                if(currentId < 24){
-                    currentId++
-                    listOfPokemonsViewModel.callToGetFormPokemonForGetImage(it.id, it.name)
-                }
+                listOfPokemonsViewModel.callToGetFormPokemonForGetImage(it.id, it.name)
             }
 
         })
 
-        listOfPokemonsViewModel.getDataPokemonResult.observe(viewLifecycleOwner, Observer {
-            //listOfPokemons.listOfPokemons.get(currentId).data = it.data!!
-        })
 
         listOfPokemonsViewModel.getFormPokemonResult.observe(viewLifecycleOwner, Observer {
-            if(currentId.equals(24)){
-                adapter = RecyclerViewAdapter(listOfPokemonsViewModel.getListOfItemModel(), R.color.gray_light, R.color.green, requireContext().getDrawable(R.drawable.profile)!!, ::onClickPokemon
-                )
-                // Setting the Adapter with the recyclerview
-                recyclerview.adapter = adapter
+            if(!itemSelected){
+                if(listOfPokemonsViewModel.getListOfItemModel().size == 25){
+                    adapter = RecyclerViewAdapter(listOfPokemonsViewModel.getListOfItemModel(), R.color.gray_light, R.color.green, requireContext().getDrawable(R.drawable.profile)!!, ::onClickPokemon
+                    )
+                    // Setting the Adapter with the recyclerview
+                    recyclerview.adapter = adapter
+                }
+
+            }else{
+                itemSelected = false
+                findNavController().navigate(ListOfPokemonsFragmentDirections.actionListOfPokemonsFragmentToDetailPokemonFragment(listOfPokemonsViewModel.getDataPokemonResult.value!!, it))
             }
+
         })
 
     }
 
     private fun onClickPokemon(id: Int){
+        itemSelected = true
         listOfPokemonsViewModel.getDataPokemon(id)
     }
 }

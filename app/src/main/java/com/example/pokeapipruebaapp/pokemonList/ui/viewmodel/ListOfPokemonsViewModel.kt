@@ -58,13 +58,12 @@ class ListOfPokemonsViewModel @Inject constructor(
     val isLoading: LiveData<Boolean>
         get() = _isLoading
 
-
-    init {
-        getPokemons()
-    }
-
     fun addItemModel(itemModel: ItemModel){
         _listOfItemModel.value = _listOfItemModel.value!! + itemModel
+    }
+
+    fun clearItemModelList(){
+        _listOfItemModel.value = emptyList()
     }
 
     fun getListOfItemModel(): List<ItemModel>{
@@ -87,12 +86,15 @@ class ListOfPokemonsViewModel @Inject constructor(
         _isLoading.value = true
         viewModelScope.launch {
             val result = getDataPokemonUseCase(id)
-            if(!result.message.isNullOrEmpty())
+            if(!result.message.isNullOrEmpty()){
                 _getPokemonsErrorMessage.value = result.message!!
-            else
+                _isLoading.value = false
+            }
+            else{
                 _getDataPokemonResult.value = result.data!!
                 callToGetFormPokemonForDetail(id)
-            _isLoading.value = false
+            }
+
         }
     }
 
@@ -109,9 +111,10 @@ class ListOfPokemonsViewModel @Inject constructor(
         _isLoading.value = true
         viewModelScope.launch {
             val result = getFormPokemonUseCase(id)
-            if(!result.message.isNullOrEmpty())
+            if(!result.message.isNullOrEmpty()){
+                _isLoading.value = false
                 _getPokemonsErrorMessage.value = result.message!!
-            else
+            } else {
                 _getFormPokemonResult.value = result.data!!
                 if(name.isNotEmpty()){
                     val itemModel = ItemModel(
@@ -121,7 +124,7 @@ class ListOfPokemonsViewModel @Inject constructor(
                     )
                     addItemModel(itemModel)
                 }
-            _isLoading.value = false
+            }
         }
     }
 

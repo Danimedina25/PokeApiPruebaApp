@@ -43,6 +43,7 @@ class RecyclerViewAdapter(
         with(holder){
             with(listItems[position]){
                 if(this.url_image.isNotEmpty()){
+                    binding.textName.text = this.nombre.uppercase()
                     showImageFromUrl(binding, this.url_image, this.nombre)
                 }else{
                     if(this.nombre.isNotEmpty()){
@@ -107,7 +108,7 @@ class RecyclerViewAdapter(
 
             })
             .centerCrop()
-            .into(binding.imageProfile);
+            .into(binding.imageProfile)
     }
 
     private fun showIniciales(binding: ItemMasterDetailBinding, nombre: String){
