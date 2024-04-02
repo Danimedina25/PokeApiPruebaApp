@@ -2,12 +2,11 @@ package com.example.pokeapipruebaapp.adapter
 
 import android.annotation.SuppressLint
 import android.graphics.drawable.Drawable
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.appcompat.content.res.AppCompatResources
-import androidx.compose.ui.res.colorResource
+import androidx.compose.ui.text.capitalize
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
@@ -16,18 +15,16 @@ import com.bumptech.glide.load.engine.GlideException
 import com.bumptech.glide.request.RequestListener
 import com.bumptech.glide.request.target.Target
 import com.example.pokeapipruebaapp.ItemModel
-import com.example.pokeapipruebaapp.R
 import com.example.pokeapipruebaapp.databinding.ItemMasterDetailBinding
-import com.google.gson.Gson
 
-class RecyclerViewAdapter(
+class ItemModelAdapter(
     private val listItems: List<ItemModel>,
     val backgroundColor: Int,
     val textColor: Int,
     val placeholderImage: Drawable,
     val onClickItem: (id: Int) -> Unit
     ):
-    RecyclerView.Adapter<RecyclerViewAdapter.MyViewHolder>() {
+    RecyclerView.Adapter<ItemModelAdapter.MyViewHolder>() {
 
     @SuppressLint("SuspiciousIndentation")
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MyViewHolder {
@@ -43,7 +40,7 @@ class RecyclerViewAdapter(
         with(holder){
             with(listItems[position]){
                 if(this.url_image.isNotEmpty()){
-                    binding.textName.text = this.nombre.uppercase()
+                    binding.textName.text = this.nombre.capitalize()
                     showImageFromUrl(binding, this.url_image, this.nombre)
                 }else{
                     if(this.nombre.isNotEmpty()){

@@ -1,33 +1,21 @@
 package com.example.pokeapipruebaapp.pokemonList.ui.view
 
-import android.graphics.drawable.Drawable
 import android.os.Bundle
-import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.compose.runtime.collectAsState
-import androidx.fragment.app.viewModels
-import androidx.lifecycle.Observer
+import androidx.compose.ui.text.capitalize
 import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
-import com.bumptech.glide.load.DataSource
-import com.bumptech.glide.load.engine.GlideException
-import com.bumptech.glide.request.RequestListener
-import com.bumptech.glide.request.target.Target
-import com.example.pokeapipruebaapp.ItemModel
 import com.example.pokeapipruebaapp.R
-import com.example.pokeapipruebaapp.adapter.RecyclerViewAdapter
-import com.example.pokeapipruebaapp.databinding.FragmentListOfPokemonsBinding
+import com.example.pokeapipruebaapp.adapter.ItemModelAdapter
 import com.example.pokeapipruebaapp.databinding.FragmentPokemonDetailBinding
 import com.example.pokeapipruebaapp.pokemonList.domain.model.PokemonDataModel
 import com.example.pokeapipruebaapp.pokemonList.domain.model.PokemonFormModel
-import com.example.pokeapipruebaapp.pokemonList.domain.model.PokemonListModel
-import com.example.pokeapipruebaapp.pokemonList.ui.viewmodel.ListOfPokemonsViewModel
-import com.google.gson.Gson
+import com.example.pokeapipruebaapp.pokemonList.ui.view.adapters.ItemTypeAdapter
 import dagger.hilt.android.AndroidEntryPoint
 
 
@@ -36,6 +24,8 @@ class PokemonDetailFragment : Fragment() {
 
     private var _binding: FragmentPokemonDetailBinding? = null
     private val binding get() = _binding!!
+    private lateinit var recyclerview: RecyclerView
+    private lateinit var adapter: ItemTypeAdapter
     private lateinit var pokemonDataModel: PokemonDataModel
     private lateinit var pokemonFormModel: PokemonFormModel
     private val navigationArgs : PokemonDetailFragmentArgs by navArgs()
@@ -57,11 +47,16 @@ class PokemonDetailFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         pokemonDataModel = navigationArgs.pokemonData
         pokemonFormModel = navigationArgs.pokemonForm
+
+        recyclerview = binding.recyclerView
+        // this creates a vertical layout Manager
+        recyclerview.layoutManager = LinearLayoutManager(context)
+
         setData()
     }
 
     private fun setData(){
-        binding.textName.text = pokemonFormModel.name.toString().uppercase()
+        binding.textName.text = pokemonFormModel.name.capitalize()
         Glide
             .with(requireContext())
             .load(pokemonFormModel.sprites.front_default)
@@ -70,5 +65,8 @@ class PokemonDetailFragment : Fragment() {
             .into(binding.imagePokemon);
         binding.textHeight.text = "${pokemonDataModel.height} pies"
         binding.textWeight.text = "${pokemonDataModel.weight} libras"
+        adapter = ItemTypeAdapter(pokemonFormModel.types)
+        // Setting the Adapter with the recyclerview
+        recyclerview.adapter = adapter
     }
 }

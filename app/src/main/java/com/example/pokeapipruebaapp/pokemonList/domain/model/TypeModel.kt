@@ -5,6 +5,6 @@ import kotlinx.parcelize.Parcelize
 
 @Parcelize
 data class TypeModel(
+    val url: String,
     val name: String,
-    val url: String
 ): Parcelable
