@@ -5,6 +5,8 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
+import android.widget.Toast.LENGTH_SHORT
 import androidx.compose.ui.text.capitalize
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
@@ -52,6 +54,8 @@ class PokemonDetailFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         pokemonDataModel = navigationArgs.pokemonData
         pokemonFormModel = navigationArgs.pokemonForm
+
+        listOfPokemonsViewModel.checkIfIsFavorite(pokemonFormModel.id)
         binding.noFavoriteButton.setOnClickListener{
             val favoritesModel = PokeApiFavoritesModel(pokemonFormModel.id, pokemonFormModel.name)
             listOfPokemonsViewModel.addToFavorites(favoritesModel)
@@ -82,16 +86,24 @@ class PokemonDetailFragment : Fragment() {
         recyclerview.adapter = adapter
     }
     private fun setupObservers(){
+        listOfPokemonsViewModel.checkIfIsFavoriteResult.observe(viewLifecycleOwner, Observer {
+            if(it){
+                binding.favoriteButton.visibility = View.VISIBLE
+                binding.noFavoriteButton.visibility = View.GONE
+            }
+        })
         listOfPokemonsViewModel.addToFavoritesResult.observe(viewLifecycleOwner, Observer {
             if(it > 0){
                 binding.noFavoriteButton.visibility = View.GONE
                 binding.favoriteButton.visibility = View.VISIBLE
+                Toast.makeText(requireContext(), "Se marcó a ${pokemonFormModel.name.capitalize()} como favorito!", LENGTH_SHORT).show()
             }
         })
         listOfPokemonsViewModel.deleteFavoriteResult.observe(viewLifecycleOwner, Observer {
             if(it > 0){
                 binding.favoriteButton.visibility = View.GONE
                 binding.noFavoriteButton.visibility = View.VISIBLE
+                Toast.makeText(requireContext(), "Se desmarcó a ${pokemonFormModel.name.capitalize()} como favorito", LENGTH_SHORT).show()
             }
         })
     }

@@ -22,7 +22,8 @@ class ItemModelAdapter(
     val backgroundColor: Int,
     val textColor: Int,
     val placeholderImage: Drawable,
-    val onClickItem: (id: Int) -> Unit
+    val onClickItem: (id: Int) -> Unit,
+    val showOptionFavorites: Boolean
     ):
     RecyclerView.Adapter<ItemModelAdapter.MyViewHolder>() {
 
@@ -39,6 +40,8 @@ class ItemModelAdapter(
     override fun onBindViewHolder(holder: MyViewHolder, position: Int) {
         with(holder){
             with(listItems[position]){
+                if(showOptionFavorites)
+                    binding.favoriteButton.visibility = View.VISIBLE
                 if(this.url_image.isNotEmpty()){
                     binding.textName.text = this.nombre.capitalize()
                     showImageFromUrl(binding, this.url_image, this.nombre)

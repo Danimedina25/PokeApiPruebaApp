@@ -14,6 +14,7 @@ import com.example.pokeapipruebaapp.pokemonList.domain.model.PokemonFormModel
 import com.example.pokeapipruebaapp.pokemonList.domain.model.PokemonListModel
 import com.example.pokeapipruebaapp.pokemonList.domain.model.toDatabase
 import com.example.pokeapipruebaapp.pokemonList.domain.usecases.AddToFavoritesUseCase
+import com.example.pokeapipruebaapp.pokemonList.domain.usecases.CheckIfIsFavoriteUseCase
 import com.example.pokeapipruebaapp.pokemonList.domain.usecases.DeleteFavoriteUseCase
 import com.example.pokeapipruebaapp.pokemonList.domain.usecases.GetDataPokemonUseCase
 import com.example.pokeapipruebaapp.pokemonList.domain.usecases.GetFormPokemonUseCase
@@ -38,7 +39,8 @@ class ListOfPokemonsViewModel @Inject constructor(
     private val getDataPokemonUseCase: GetDataPokemonUseCase,
     private val getFormPokemonUseCase: GetFormPokemonUseCase,
     private val addToFavoritesUseCase: AddToFavoritesUseCase,
-    private val deleteFavoriteUseCase: DeleteFavoriteUseCase
+    private val deleteFavoriteUseCase: DeleteFavoriteUseCase,
+    private val checkIfIsFavoriteUseCase: CheckIfIsFavoriteUseCase
 ) : ViewModel() {
 
     private val _getPokemonsResult = MutableLiveData<PokemonListModel>()
@@ -72,6 +74,10 @@ class ListOfPokemonsViewModel @Inject constructor(
     private val _deleteFavoriteResult = MutableLiveData<Int>(0)
     val deleteFavoriteResult: LiveData<Int>
         get() = _deleteFavoriteResult
+
+    private val _checkIfIsFavoriteResult = MutableLiveData<Boolean>(false)
+    val checkIfIsFavoriteResult : LiveData<Boolean>
+        get() = _checkIfIsFavoriteResult
 
     fun addItemModel(itemModel: ItemModel){
         _listOfItemModel.value = _listOfItemModel.value!! + itemModel
@@ -110,6 +116,13 @@ class ListOfPokemonsViewModel @Inject constructor(
             val result = deleteFavoriteUseCase(idPokemon)
             Log.d("resultDeleteFavorite", result.toString())
             _deleteFavoriteResult.value = result
+        }
+    }
+    fun checkIfIsFavorite(idPokemon: Int) {
+        viewModelScope.launch {
+            val result = checkIfIsFavoriteUseCase(idPokemon)
+            Log.d("resultcheckIfIsFavorite", result.toString())
+            _checkIfIsFavoriteResult .value = result
         }
     }
     fun getDataPokemon(id: Int) {

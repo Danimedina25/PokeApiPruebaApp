@@ -29,7 +29,7 @@ interface PokeApiDao {
     @Query("DELETE FROM poke_api_favorites_table WHERE id_pokemon=:idPokemon")
     suspend fun deleteFavorite(idPokemon: Int): Int
     @Query("SELECT EXISTS(SELECT * FROM poke_api_favorites_table WHERE id_pokemon=:idPokemon)")
-    fun isFavoriteIsExist(idPokemon: Int) : Boolean
+    fun checkifFavoritePokemonExist(idPokemon: Int) : Boolean
     @Query("SELECT * FROM poke_api_favorites_table WHERE id_pokemon=:idPokemon")
     suspend fun getFavorite(idPokemon: Int):PokeApiFavoritesEntity
 }

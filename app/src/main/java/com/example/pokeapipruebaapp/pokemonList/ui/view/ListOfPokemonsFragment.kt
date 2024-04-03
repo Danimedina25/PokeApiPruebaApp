@@ -5,6 +5,7 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
@@ -74,14 +75,15 @@ class ListOfPokemonsFragment : Fragment() {
             it!!.listOfPokemons.forEach {
                 listOfPokemonsViewModel.callToGetFormPokemonForGetImage(it.id, it.name)
             }
-
         })
 
 
         listOfPokemonsViewModel.getFormPokemonResult.observe(viewLifecycleOwner, Observer {
             if(!itemSelected){
                 if(listOfPokemonsViewModel.getListOfItemModel().size == 25){
-                    adapter = ItemModelAdapter(listOfPokemonsViewModel.getListOfItemModel(), R.color.gray_light, R.color.green, requireContext().getDrawable(R.drawable.profile)!!, ::onClickPokemon
+                    adapter = ItemModelAdapter(listOfPokemonsViewModel.getListOfItemModel(),
+                        R.color.gray_light, R.color.green, requireContext().getDrawable(R.drawable.profile)!!,
+                        ::onClickPokemon, true
                     )
                     // Setting the Adapter with the recyclerview
                     recyclerview.adapter = adapter
@@ -93,6 +95,8 @@ class ListOfPokemonsFragment : Fragment() {
             }
 
         })
+
+
 
     }
 

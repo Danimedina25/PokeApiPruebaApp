@@ -16,6 +16,6 @@ class DatabaseModule {
     @Singleton
     @Provides
     fun providePokeApiPruebaDB(@ApplicationContext context : Context) : PokeApiDatabase{
-        return Room.databaseBuilder(context, PokeApiDatabase::class.java, "PokeApiPruebaDB").build()
+        return Room.databaseBuilder(context, PokeApiDatabase::class.java, "PokeApiPruebaDB").allowMainThreadQueries().build()
     }
 }

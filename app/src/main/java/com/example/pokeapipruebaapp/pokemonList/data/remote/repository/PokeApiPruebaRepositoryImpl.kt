@@ -72,6 +72,6 @@ class PokeApiPruebaRepositoryImpl  @Inject constructor(
     }
 
     override suspend fun checkIfIsFavorite(idPokemon: Int): Boolean {
-        TODO("Not yet implemented")
+        return pokeApiDatabase.getPokeApiDao().checkifFavoritePokemonExist(idPokemon)
     }
 }
