@@ -71,13 +71,20 @@ class ListOfPokemonsViewModel @Inject constructor(
     val addToFavoritesResult: LiveData<Long>
         get() = _addToFavoritesResult
 
-    private val _deleteFavoriteResult = MutableLiveData<Int>(0)
+    val _deleteFavoriteResult = MutableLiveData<Int>(0)
     val deleteFavoriteResult: LiveData<Int>
         get() = _deleteFavoriteResult
 
     private val _checkIfIsFavoriteResult = MutableLiveData<Boolean>(false)
     val checkIfIsFavoriteResult : LiveData<Boolean>
         get() = _checkIfIsFavoriteResult
+
+    private val _offset = MutableLiveData<Int>(0)
+    val offset : LiveData<Int>
+        get() = _offset
+    private val _limit = MutableLiveData<Int>(25)
+    val limit : LiveData<Int>
+        get() = _limit
 
     fun addItemModel(itemModel: ItemModel){
         _listOfItemModel.value = _listOfItemModel.value!! + itemModel
@@ -87,14 +94,27 @@ class ListOfPokemonsViewModel @Inject constructor(
         _listOfItemModel.value = emptyList()
     }
 
+    fun clearAddToFavoritesResult(){
+        _addToFavoritesResult.value = 0
+    }
+    fun clearDeleteFavoriteResult(){
+        _deleteFavoriteResult.value = 0
+    }
+
     fun getListOfItemModel(): List<ItemModel>{
         return _listOfItemModel.value!!
+    }
+    fun setOffset(offset: Int){
+        _offset.value = offset
+    }
+    fun setLimit(limit: Int){
+        _limit.value = limit
     }
 
     fun getPokemons() {
         _isLoading.value = true
         viewModelScope.launch {
-            val result = getListOfPokemonsUseCase(0, 25)
+            val result = getListOfPokemonsUseCase(_offset.value!!, _limit.value!!)
             if(!result.message.isNullOrEmpty())
                 _getPokemonsErrorMessage.value = result.message!!
             else
@@ -104,18 +124,22 @@ class ListOfPokemonsViewModel @Inject constructor(
         }
     }
 
-    fun addToFavorites(pokeApiFavoritesModel: PokeApiFavoritesModel) {
+    fun addToFavorites(pokeApiFavoritesModel: PokeApiFavoritesModel, position: Int) {
         viewModelScope.launch {
             val result = addToFavoritesUseCase(pokeApiFavoritesModel)
             Log.d("resultAddToFavorites", result.toString())
             _addToFavoritesResult.value = result
+            if(getListOfItemModel().isNotEmpty())
+                _listOfItemModel.value!![position].isFavorite = true
         }
     }
-    fun deleteFavorite(idPokemon: Int) {
+    fun deleteFavorite(idPokemon: Int, position: Int) {
         viewModelScope.launch {
             val result = deleteFavoriteUseCase(idPokemon)
             Log.d("resultDeleteFavorite", result.toString())
             _deleteFavoriteResult.value = result
+            if(getListOfItemModel().isNotEmpty())
+                _listOfItemModel.value!![position].isFavorite = false
         }
     }
     fun checkIfIsFavorite(idPokemon: Int) {
@@ -141,7 +165,7 @@ class ListOfPokemonsViewModel @Inject constructor(
         }
     }
 
-    fun callToGetFormPokemonForDetail(id: Int){
+    private fun callToGetFormPokemonForDetail(id: Int){
         getFormPokemon(id, "")
     }
 
@@ -151,6 +175,7 @@ class ListOfPokemonsViewModel @Inject constructor(
 
     @SuppressLint("SuspiciousIndentation")
     fun getFormPokemon(id: Int, name:String) {
+        clearItemModelList()
         _isLoading.value = true
         viewModelScope.launch {
             val result = getFormPokemonUseCase(id)
@@ -158,18 +183,18 @@ class ListOfPokemonsViewModel @Inject constructor(
                 _isLoading.value = false
                 _getPokemonsErrorMessage.value = result.message!!
             } else {
-                _getFormPokemonResult.value = result.data!!
                 if(name.isNotEmpty()){
+                    checkIfIsFavorite(id)
                     val itemModel = ItemModel(
                         id,
-                        _getFormPokemonResult.value!!.sprites.front_default,
-                        name
+                        result.data!!.sprites.front_default,
+                        name,
+                        _checkIfIsFavoriteResult.value!!
                     )
                     addItemModel(itemModel)
                 }
+                _getFormPokemonResult.value = result.data!!
             }
         }
     }
-
-
 }

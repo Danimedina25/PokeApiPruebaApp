@@ -58,10 +58,10 @@ class PokemonDetailFragment : Fragment() {
         listOfPokemonsViewModel.checkIfIsFavorite(pokemonFormModel.id)
         binding.noFavoriteButton.setOnClickListener{
             val favoritesModel = PokeApiFavoritesModel(pokemonFormModel.id, pokemonFormModel.name)
-            listOfPokemonsViewModel.addToFavorites(favoritesModel)
+            listOfPokemonsViewModel.addToFavorites(favoritesModel, 0)
         }
         binding.favoriteButton.setOnClickListener{
-            listOfPokemonsViewModel.deleteFavorite(pokemonFormModel.id)
+            listOfPokemonsViewModel.deleteFavorite(pokemonFormModel.id, 0)
         }
         setData()
         setupObservers()

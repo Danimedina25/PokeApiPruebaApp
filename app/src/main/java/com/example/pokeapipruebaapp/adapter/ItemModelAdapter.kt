@@ -6,7 +6,6 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.appcompat.content.res.AppCompatResources
-import androidx.compose.ui.text.capitalize
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
@@ -23,7 +22,9 @@ class ItemModelAdapter(
     val textColor: Int,
     val placeholderImage: Drawable,
     val onClickItem: (id: Int) -> Unit,
-    val showOptionFavorites: Boolean
+    val showOptionFavorites: Boolean,
+    val onClickAddToFavorites: (position: Int, id: Int, name:String) -> Unit,
+    val onClickDeleteFavorite: (position: Int, id: Int, name:String) -> Unit,
     ):
     RecyclerView.Adapter<ItemModelAdapter.MyViewHolder>() {
 
@@ -40,8 +41,22 @@ class ItemModelAdapter(
     override fun onBindViewHolder(holder: MyViewHolder, position: Int) {
         with(holder){
             with(listItems[position]){
-                if(showOptionFavorites)
-                    binding.favoriteButton.visibility = View.VISIBLE
+                if(showOptionFavorites){
+                    if (this.isFavorite){
+                        binding.favoriteButton.visibility = View.VISIBLE
+                        binding.noFavoriteButton.visibility = View.GONE
+                    }else{
+                        binding.favoriteButton.visibility = View.GONE
+                        binding.noFavoriteButton.visibility = View.VISIBLE
+                    }
+                    binding.favoriteButton.setOnClickListener {
+                        onClickDeleteFavorite(position, this.id, this.nombre)
+                    }
+                    binding.noFavoriteButton.setOnClickListener {
+                        onClickAddToFavorites(position, this.id, this.nombre)
+                    }
+                }
+
                 if(this.url_image.isNotEmpty()){
                     binding.textName.text = this.nombre.capitalize()
                     showImageFromUrl(binding, this.url_image, this.nombre)
