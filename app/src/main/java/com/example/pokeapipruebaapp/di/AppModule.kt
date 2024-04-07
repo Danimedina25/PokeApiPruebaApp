@@ -1,7 +1,7 @@
 package com.example.pokeapipruebaapp.di
 
-import com.example.openweatherapp.OpenWeatherFeature.domain.util.Constants
 import com.example.pokeapipruebaapp.pokemonList.data.remote.services.PokeApi
+import com.example.pokeapipruebaapp.utils.Constants
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn

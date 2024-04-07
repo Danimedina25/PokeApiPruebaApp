@@ -20,47 +20,16 @@ class PokeApiPruebaRepositoryImpl  @Inject constructor(
     private val pokeApiDatabase: PokeApiDatabase
 ): PokeApiPruebaRepository {
 
-    override suspend fun getPokemons(offset: Int, limit:Int): NetworkResult<PokemonListModel> {
-        return try {
-            val result = pokeApi.getPokemons(offset, limit).toListPokemonsDomain()
-            Log.d("resultRepository", Gson().toJson(result))
-            NetworkResult.Success(
-                data = result
-            )
-
-        } catch (e: Exception) {
-            (NetworkResult.Error(
-                message = "Unknown error",
-            ))
-        }
+    override suspend fun getPokemons(offset: Int, limit:Int): PokemonListModel {
+        return pokeApi.getPokemons(offset, limit).toListPokemonsDomain()
     }
 
-    override suspend fun getDataPokemon(id: Int): NetworkResult<PokemonDataModel> {
-        return try {
-            val result = pokeApi.getDataPokemon(id).toDomain()
-            NetworkResult.Success(
-                data = result
-            )
-
-        } catch (e: Exception) {
-            (NetworkResult.Error(
-                message = "Unknown error",
-            ))
-        }
+    override suspend fun getDataPokemon(id: Int): PokemonDataModel {
+        return pokeApi.getDataPokemon(id).toDomain()
     }
 
-    override suspend fun getFormPokemon(id: Int): NetworkResult<PokemonFormModel> {
-        return try {
-            val result = pokeApi.getFormPokemon(id).toDomain()
-            NetworkResult.Success(
-                data = result
-            )
-
-        } catch (e: Exception) {
-            (NetworkResult.Error(
-                message = "Unknown error",
-            ))
-        }
+    override suspend fun getFormPokemon(id: Int): PokemonFormModel {
+        return pokeApi.getFormPokemon(id).toDomain()
     }
 
     override suspend fun addToFavorites(pokeApiFavoritesModel: PokeApiFavoritesModel): Long{

@@ -114,20 +114,57 @@ class ListOfPokemonsViewModel @Inject constructor(
     fun getPokemons() {
         _isLoading.value = true
         viewModelScope.launch {
-            val result = getListOfPokemonsUseCase(_offset.value!!, _limit.value!!)
-            if(!result.message.isNullOrEmpty())
-                _getPokemonsErrorMessage.value = result.message!!
-            else
-                _getPokemonsResult.value = result.data!!
-
+            when(val result = getListOfPokemonsUseCase(_offset.value!!, _limit.value!!)){
+                is NetworkResult.Success -> { _getPokemonsResult.value = result.data!! }
+                is NetworkResult.Error -> { _getPokemonsErrorMessage.value = result.message!! }
+            }
             _isLoading.value = false
+        }
+    }
+
+    fun getDataPokemon(id: Int) {
+        _isLoading.value = true
+        viewModelScope.launch {
+            when(val result = getDataPokemonUseCase(id)){
+                is NetworkResult.Success -> {
+                    _getDataPokemonResult.value = result.data!!
+                    callToGetFormPokemonForDetail(id)
+                }
+                is NetworkResult.Error -> { _getPokemonsErrorMessage.value = result.message!!
+                    _isLoading.value = false }
+            }
+        }
+    }
+    @SuppressLint("SuspiciousIndentation")
+    fun getFormPokemon(id: Int, name:String) {
+        clearItemModelList()
+        _isLoading.value = true
+        viewModelScope.launch {
+            when(val result = getFormPokemonUseCase(id)){
+                is NetworkResult.Success -> {
+                    if(name.isNotEmpty()){
+                        checkIfIsFavorite(id)
+                        val itemModel = ItemModel(
+                            id,
+                            result.data!!.sprites.front_default,
+                            name,
+                            _checkIfIsFavoriteResult.value!!
+                        )
+                        addItemModel(itemModel)
+                    }
+                    _getFormPokemonResult.value = result.data!!
+                }
+                is NetworkResult.Error -> {
+                    _isLoading.value = false
+                    _getPokemonsErrorMessage.value = result.message!!
+                }
+            }
         }
     }
 
     fun addToFavorites(pokeApiFavoritesModel: PokeApiFavoritesModel, position: Int) {
         viewModelScope.launch {
             val result = addToFavoritesUseCase(pokeApiFavoritesModel)
-            Log.d("resultAddToFavorites", result.toString())
             _addToFavoritesResult.value = result
             if(getListOfItemModel().isNotEmpty())
                 _listOfItemModel.value!![position].isFavorite = true
@@ -136,7 +173,6 @@ class ListOfPokemonsViewModel @Inject constructor(
     fun deleteFavorite(idPokemon: Int, position: Int) {
         viewModelScope.launch {
             val result = deleteFavoriteUseCase(idPokemon)
-            Log.d("resultDeleteFavorite", result.toString())
             _deleteFavoriteResult.value = result
             if(getListOfItemModel().isNotEmpty())
                 _listOfItemModel.value!![position].isFavorite = false
@@ -145,23 +181,7 @@ class ListOfPokemonsViewModel @Inject constructor(
     fun checkIfIsFavorite(idPokemon: Int) {
         viewModelScope.launch {
             val result = checkIfIsFavoriteUseCase(idPokemon)
-            Log.d("resultcheckIfIsFavorite", result.toString())
             _checkIfIsFavoriteResult .value = result
-        }
-    }
-    fun getDataPokemon(id: Int) {
-        _isLoading.value = true
-        viewModelScope.launch {
-            val result = getDataPokemonUseCase(id)
-            if(!result.message.isNullOrEmpty()){
-                _getPokemonsErrorMessage.value = result.message!!
-                _isLoading.value = false
-            }
-            else{
-                _getDataPokemonResult.value = result.data!!
-                callToGetFormPokemonForDetail(id)
-            }
-
         }
     }
 
@@ -171,30 +191,5 @@ class ListOfPokemonsViewModel @Inject constructor(
 
     fun callToGetFormPokemonForGetImage(id: Int, name: String){
         getFormPokemon(id, name)
-    }
-
-    @SuppressLint("SuspiciousIndentation")
-    fun getFormPokemon(id: Int, name:String) {
-        clearItemModelList()
-        _isLoading.value = true
-        viewModelScope.launch {
-            val result = getFormPokemonUseCase(id)
-            if(!result.message.isNullOrEmpty()){
-                _isLoading.value = false
-                _getPokemonsErrorMessage.value = result.message!!
-            } else {
-                if(name.isNotEmpty()){
-                    checkIfIsFavorite(id)
-                    val itemModel = ItemModel(
-                        id,
-                        result.data!!.sprites.front_default,
-                        name,
-                        _checkIfIsFavoriteResult.value!!
-                    )
-                    addItemModel(itemModel)
-                }
-                _getFormPokemonResult.value = result.data!!
-            }
-        }
     }
 }

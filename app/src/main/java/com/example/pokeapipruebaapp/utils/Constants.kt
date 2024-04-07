@@ -1,4 +1,4 @@
-package com.example.openweatherapp.OpenWeatherFeature.domain.util
+package com.example.pokeapipruebaapp.utils
 
 class Constants {
     companion object {

@@ -23,7 +23,7 @@ import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
 class ListOfPokemonsFragment : Fragment() {
-
+    
     private val listOfPokemonsViewModel: ListOfPokemonsViewModel by viewModels()
     private var _binding: FragmentListOfPokemonsBinding? = null
     private val binding get() = _binding!!
@@ -52,6 +52,11 @@ class ListOfPokemonsFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+        // getting the recyclerview by its id
+        recyclerview = binding.recyclerView
+        // this creates a vertical layout Manager
+        recyclerview.layoutManager = LinearLayoutManager(context)
         offset = listOfPokemonsViewModel.offset.value!!
         limit = listOfPokemonsViewModel.limit.value!!
         listOfPokemonsViewModel.getPokemons()
@@ -84,11 +89,6 @@ class ListOfPokemonsFragment : Fragment() {
         listOfPokemonsViewModel.getFormPokemonResult.observe(viewLifecycleOwner, Observer {
             if(!itemSelected){
                 if(listOfPokemonsViewModel.getListOfItemModel().size == 25){
-                    // getting the recyclerview by its id
-                    recyclerview = binding.recyclerView
-
-                    // this creates a vertical layout Manager
-                    recyclerview.layoutManager = LinearLayoutManager(context)
                     adapter = ItemModelAdapter(listOfPokemonsViewModel.getListOfItemModel(),
                         R.color.gray_light, R.color.green, requireContext().getDrawable(R.drawable.profile)!!,
                         ::onClickPokemon, true, ::onClickAddToFavorites, ::onClickDeleteFavorite
@@ -145,6 +145,7 @@ class ListOfPokemonsFragment : Fragment() {
             offset += 25
             listOfPokemonsViewModel.setOffset(offset)
             listOfPokemonsViewModel.clearItemModelList()
+            adapter.notifyItemRangeRemoved(0,25)
             listOfPokemonsViewModel.getPokemons()
         }else{
             Toast.makeText(requireContext(), "Has llegado al último pokemón de la lista!", LENGTH_SHORT).show()
@@ -155,6 +156,7 @@ class ListOfPokemonsFragment : Fragment() {
             offset -= 25
             listOfPokemonsViewModel.setOffset(offset)
             listOfPokemonsViewModel.clearItemModelList()
+            adapter.notifyItemRangeRemoved(0,25)
             listOfPokemonsViewModel.getPokemons()
         }else{
             Toast.makeText(requireContext(), "Estás en la primera página!", LENGTH_SHORT).show()
