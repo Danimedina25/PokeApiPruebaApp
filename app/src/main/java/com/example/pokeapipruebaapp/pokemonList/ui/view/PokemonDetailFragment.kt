@@ -81,7 +81,7 @@ class PokemonDetailFragment : Fragment() {
         recyclerview = binding.recyclerView
         // this creates a vertical layout Manager
         recyclerview.layoutManager = LinearLayoutManager(context)
-        adapter = ItemTypeAdapter(pokemonFormModel.types)
+        adapter = ItemTypeAdapter(pokemonFormModel.types.listOfTypes)
         // Setting the Adapter with the recyclerview
         recyclerview.adapter = adapter
     }

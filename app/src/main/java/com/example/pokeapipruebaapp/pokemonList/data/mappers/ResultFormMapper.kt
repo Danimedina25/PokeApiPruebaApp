@@ -4,6 +4,7 @@ import com.example.pokeapipruebaapp.pokemonList.data.remote.services.response.fo
 import com.example.pokeapipruebaapp.pokemonList.data.remote.services.response.formPokemon.SpritesPokemonDto
 import com.example.pokeapipruebaapp.pokemonList.data.remote.services.response.formPokemon.TypePokemonDto
 import com.example.pokeapipruebaapp.pokemonList.domain.model.PokemonFormModel
+import com.example.pokeapipruebaapp.pokemonList.domain.model.PokemonTypesListModel
 import com.example.pokeapipruebaapp.pokemonList.domain.model.SpritesModel
 import com.example.pokeapipruebaapp.pokemonList.domain.model.TypeModel
 import com.example.pokeapipruebaapp.pokemonList.domain.model.TypesModel
@@ -27,12 +28,13 @@ fun TypePokemonDto.toDomain() = TypeModel(
 )
 
 
-fun ApiResponseFormDto.toListOfTypesDomain(): List<TypesModel> {
+fun ApiResponseFormDto.toListOfTypesDomain(): PokemonTypesListModel {
     val listOfTypes = types.mapIndexed { _, type ->
         TypesModel(
             slot = type.slot,
             type = type.type.toDomain()
         )
     }
-    return listOfTypes
+
+    return PokemonTypesListModel(listOfTypes)
 }

@@ -7,13 +7,12 @@ import com.example.pokeapipruebaapp.pokemonList.domain.model.PokemonModel
 
 @Entity(tableName = "poke_api_table")
 data class PokeApiEntity(
-    @PrimaryKey(autoGenerate = true)
-    val id: Int = 0,
-    val listOfPokemons: PokemonListModel
+    val listOfPokemons: PokemonListModel,
+    @PrimaryKey(autoGenerate = true) val id: Int = 0
 )
 
 
-fun PokeApiEntity.toDomain(): List<PokemonModel> {
+fun PokeApiEntity.toDomain():PokemonListModel {
     val listOfPokemons = listOfPokemons.listOfPokemons.mapIndexed { _, pokemon ->
         PokemonModel(
             id= pokemon.id,
@@ -22,6 +21,6 @@ fun PokeApiEntity.toDomain(): List<PokemonModel> {
             //data = pokemon.data
         )
     }
-    return listOfPokemons
+    return PokemonListModel(listOfPokemons)
 }
 
