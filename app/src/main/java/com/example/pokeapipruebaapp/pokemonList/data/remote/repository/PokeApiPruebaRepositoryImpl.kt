@@ -23,10 +23,11 @@ class PokeApiPruebaRepositoryImpl  @Inject constructor(
 ): PokeApiPruebaRepository {
 
     override suspend fun getPokemons(offset: Int, limit:Int): PokemonListModel {
-        val result =  pokeApiDatabase.getPokeApiDao().getListOfPokemons(offset, limit)
+        val page = (offset / limit) + 1
+        val result =  pokeApiDatabase.getPokeApiDao().getListOfPokemons(page)
         return if(result == null){
             val response = pokeApi.getPokemons(offset, limit).toListPokemonsDomain()
-            pokeApiDatabase.getPokeApiDao().insertListOfPokemons(response.toEntity())
+            pokeApiDatabase.getPokeApiDao().insertListOfPokemons(response.toEntity(page))
             response
         }else{
             result.toDomain()
@@ -45,7 +46,6 @@ class PokeApiPruebaRepositoryImpl  @Inject constructor(
     }
 
     override suspend fun getFormPokemon(id: Int): PokemonFormModel {
-        pokeApi.getFormPokemon(id).toDomain()
         val result =  pokeApiDatabase.getPokeApiDao().getFormPokemon(id)
         return if(result == null){
             val response = pokeApi.getFormPokemon(id).toDomain()

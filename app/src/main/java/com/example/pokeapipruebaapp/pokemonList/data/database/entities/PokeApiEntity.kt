@@ -7,8 +7,9 @@ import com.example.pokeapipruebaapp.pokemonList.domain.model.PokemonModel
 
 @Entity(tableName = "poke_api_table")
 data class PokeApiEntity(
-    val listOfPokemons: PokemonListModel,
-    @PrimaryKey(autoGenerate = true) val id: Int = 0
+    @PrimaryKey(autoGenerate = true) val id: Int = 0,
+    val listOfPokemons: PokemonListModel
+
 )
 
 

@@ -7,7 +7,7 @@ data class PokemonListModel(
     val listOfPokemons: List<PokemonModel>
 )
 
-fun PokemonListModel.toEntity():PokeApiEntity {
+fun PokemonListModel.toEntity(id: Int):PokeApiEntity {
     val listOfPokemons = PokemonListModel(listOfPokemons)
-    return PokeApiEntity(listOfPokemons)
+    return PokeApiEntity(id, listOfPokemons)
 }

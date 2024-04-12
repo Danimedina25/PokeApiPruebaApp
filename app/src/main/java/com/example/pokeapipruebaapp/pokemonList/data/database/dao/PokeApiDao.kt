@@ -16,8 +16,8 @@ interface PokeApiDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertListOfPokemons(pokeApiEntity: PokeApiEntity)
 
-    @Query("SELECT * FROM poke_api_table WHERE id BETWEEN :limit and :offset")
-    suspend fun getListOfPokemons(limit: Int, offset: Int): PokeApiEntity
+    @Query("SELECT * FROM poke_api_table WHERE id =:id")
+    suspend fun getListOfPokemons(id: Int): PokeApiEntity
 
     @Query("DELETE FROM poke_api_table")
     suspend fun deleteAllListOfPokemons()
